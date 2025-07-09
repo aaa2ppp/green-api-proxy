@@ -12,6 +12,7 @@
 
         .input-section {
             width: 300px;
+            min-width: 300px;
             margin-right: 20px;
         }
 
@@ -93,18 +94,17 @@
 
         <div class="method-block">
             <input type="text" id="fileChatId" placeholder="77771234567@c.us">
-            <input type="text" id="fileUrl" placeholder="https://example.com/file.jpg">
+            <input type="text" id="fileUrl" placeholder="https://example.com/file.jpg" onChange="updateFileName()">
+            <input type="text" id="fileName" placeholder="Введите имя файла с расширением">
             <button onclick="callApi('sendFileByUrl')">sendFileByUrl</button>
         </div>
     </div>
 
     <div class="response-section">
         <h3>Ответ:</h3>
-        <pre id="apiResponse">{}</pre>
+        <pre id="apiResponse"></pre>
     </div>
 
-    <script>
-    </script>
     <script src="app.js"></script>
 </body>
 

@@ -9,6 +9,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path"
 
 	"green-api-proxy/www"
 
@@ -46,10 +47,20 @@ func main() {
 
 	http.Handle("/green-api-proxy/", http.StripPrefix("/green-api-proxy",
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Восстанавливаем ApiToken в пути запроса из заголовка
+			apiToken := r.Header.Get("X-ApiToken")
+			if apiToken == "" {
+				http.Error(w, "The 'X-ApiToken' header is required", http.StatusBadRequest)
+				return
+			}
+			r = r.Clone(r.Context()) // чтобы не изменять исходный запрос
+			r.Header.Del("X-ApiToken")
+			r.URL.Path = path.Join(r.URL.Path, apiToken)
+
 			// Разрешаем CORS только для нужных доменов
 			w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			w.Header().Set("Access-Control-Allow-Headers", "X-ApiToken, Content-Type")
 
 			switch r.Method {
 			case "OPTIONS":
