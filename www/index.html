@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GREEN-API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            padding: 20px;
+        }
+
+        .input-section {
+            width: 300px;
+            margin-right: 20px;
+        }
+
+        .response-section {
+            flex-grow: 1;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 200px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .method-block {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #chatId,
+        #message,
+        .method-block button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #message {
+            min-height: 100px;
+            resize: vertical;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="input-section">
+        <h2>GREEN-API</h2>
+
+        <div>
+            <label>idInstance:</label>
+            <input type="text" id="idInstance" placeholder="Введите idInstance">
+        </div>
+
+        <div>
+            <label>ApiTokenInstance:</label>
+            <input type="password" id="apiToken" placeholder="Введите ApiToken">
+        </div>
+
+        <div class="method-block">
+            <button onclick="callApi('getSettings')">getSettings</button>
+        </div>
+
+        <div class="method-block">
+            <button onclick="callApi('getStateInstance')">getStateInstance</button>
+        </div>
+
+        <div class="method-block">
+            <input type="text" id="chatId" placeholder="77771234567@c.us">
+            <textarea id="message" placeholder="Hello, world!"></textarea>
+            <button onclick="callApi('sendMessage')">sendMessage</button>
+        </div>
+
+        <div class="method-block">
+            <input type="text" id="fileChatId" placeholder="77771234567@c.us">
+            <input type="text" id="fileUrl" placeholder="https://example.com/file.jpg">
+            <button onclick="callApi('sendFileByUrl')">sendFileByUrl</button>
+        </div>
+    </div>
+
+    <div class="response-section">
+        <h3>Ответ:</h3>
+        <pre id="apiResponse">{}</pre>
+    </div>
+
+    <script>
+    </script>
+    <script src="app.js"></script>
+</body>
+
+</html>
