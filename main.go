@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strings"
 
 	"green-api-proxy/www"
 
@@ -32,7 +33,7 @@ func main() {
 			req.URL.Host = target.Host
 			req.Host = target.Host
 
-			slog.Debug("redirect", "req.URL:", req.URL)
+			slog.Debug("redirect", "toURL", maskApiToken(req.URL.String()))
 
 			// Добавляем заголовки для CORS
 			req.Header.Set("X-Forwarded-Host", req.Host)
@@ -79,4 +80,26 @@ func main() {
 	// Запускаем сервер
 	log.Println("Сервер запущен на :8087 (HTTPS)")
 	log.Fatal(http.ListenAndServeTLS(serverAddr, "./cert/cert.pem", "./cert/key.pem", nil))
+}
+
+func maskApiToken(url string) string {
+	if p := strings.LastIndex(url, "/"); p != -1 {
+		return url[:p+1] + "***********"
+	}
+	return url
+}
+
+func setupLogger() {
+	level := slog.LevelInfo
+	if s, ok := os.LookupEnv("LOG_LEVEL"); ok {
+		var v slog.Level
+		if err := v.UnmarshalText([]byte(s)); err != nil {
+			slog.Warn("can't parse LOG_LEVEL", "s", s)
+		} else {
+			level = v
+		}
+	}
+	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level}))
+	logger.Info("setup logger", "level", level)
+	slog.SetDefault(logger)
 }
