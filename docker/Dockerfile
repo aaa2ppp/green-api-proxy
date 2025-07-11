@@ -2,13 +2,19 @@ FROM alpine AS certs
 RUN apk add --no-cache ca-certificates
 
 FROM scratch
-# Ничего лишнего
-ARG APP_PORT=8087
-ENV APP_PORT=$APP_PORT
+# Сертификаты CA и TLS-сертификат приложения
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY ./cert /cert 
-COPY ./bin  /bin
-EXPOSE $APP_PORT
-USER 65535:65535
-ENTRYPOINT [ "/bin/app" ]
+COPY ./cert /cert
 
+# Бинарник приложения
+COPY ./bin/app /bin/app
+
+# Порт и переменные окружения
+ARG APP_PORT=8080
+ENV SERVER_ADDR=:"$APP_PORT" LOG_LEVEL=INFO
+EXPOSE $APP_PORT
+
+# Безопасность: не-root пользователь
+USER 65535:65535
+
+ENTRYPOINT [ "/bin/app" ]
