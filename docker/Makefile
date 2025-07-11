@@ -26,7 +26,7 @@ cert: .cert.done
 build-image: .build-image.done
 
 up: cert build build-image
-	docker run -d --rm -p $(APP_PORT):$(APP_PORT) \
+	docker run -d --restart=unless-stopped -p $(APP_PORT):$(APP_PORT) \
 		-e SERVER_ADDR=:$(APP_PORT) -e LOG_LEVEL=$(LOG_LEVEL) \
 		--name green-api-proxy green-api-proxy
 
@@ -36,3 +36,9 @@ down:
 clean: down
 	-docker image rm green-api-proxy
 	-rm -fr ./bin ./cert ./.*.done
+
+start:
+	docker start green-api-proxy
+	
+stop:
+	docker stop green-api-proxy
