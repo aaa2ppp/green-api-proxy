@@ -4,7 +4,7 @@ RUN apk add --no-cache ca-certificates
 FROM scratch
 # Сертификаты CA и TLS-сертификат приложения
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY ./cert /cert
+COPY ./cert/cert /cert
 
 # Бинарник приложения
 COPY ./bin/app /bin/app
