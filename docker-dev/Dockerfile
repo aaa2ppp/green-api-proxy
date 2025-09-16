@@ -9,10 +9,9 @@ COPY ./cert/cert /cert
 # Бинарник приложения
 COPY ./bin/app /bin/app
 
-# Порт и переменные окружения
-ARG APP_PORT=8080
-ENV SERVER_ADDR=:"$APP_PORT" LOG_LEVEL=INFO
-EXPOSE $APP_PORT
+# Порт по умолчанию
+ENV SERVER_ADDR=:8080
+EXPOSE 8080
 
 # Безопасность: не-root пользователь
 USER 65535:65535

@@ -1,4 +1,4 @@
-const PROXY_URL = "/green-api-proxy";
+const PROXY_URL = "/green-api/proxy";
 
 async function callApi(method) {
     const idInstance = document.getElementById("idInstance").value;

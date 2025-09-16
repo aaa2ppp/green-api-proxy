@@ -4,4 +4,8 @@ import "embed"
 
 //go:embed *.html
 //go:embed *.js
-var Static embed.FS
+var static embed.FS
+
+func New() *embed.FS {
+	return &static
+}
