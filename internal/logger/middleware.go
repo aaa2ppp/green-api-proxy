@@ -26,9 +26,12 @@ func HTTPLogging(log *slog.Logger, h http.Handler) http.Handler {
 		ctx := Context(r.Context(), log)
 		r = r.WithContext(ctx)
 
+		start := time.Now()
+
 		// Отлавливаем паники в обработчике
 		defer func() {
 			if p := recover(); p != nil {
+				logRequest(log, "panicked request", origR, time.Since(start), si.status)
 				log.Error("*** panic recovered ***",
 					"panic", p,
 					"stack", debug.Stack())
@@ -37,10 +40,8 @@ func HTTPLogging(log *slog.Logger, h http.Handler) http.Handler {
 		}()
 
 		// Передаем управление следующему обработчику
-		start := time.Now()
 		h.ServeHTTP(si, r)
-		log.Debug("request", "from", origR.RemoteAddr, "method", origR.Method, "path", origR.URL.Path,
-			"took", time.Since(start).String(), "status", si.status)
+		logRequest(log, "request", origR, time.Since(start), si.status)
 	})
 }
 
@@ -59,7 +60,6 @@ func (si *statusInterceptor) WriteHeader(status int) {
 
 	case si.status == 0:
 		si.status = status
-		si.log.Debug("response status", "status", status)
 		si.ResponseWriter.WriteHeader(status)
 
 	case si.status != status:

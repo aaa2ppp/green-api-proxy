@@ -26,8 +26,10 @@ func Load() (Config, error) {
 	const required = true
 	cfg := Config{
 		Logger: &Logger{
-			Level:     ge.LogLevel("LOG_LEVEL", !required, slog.LevelInfo),
-			Plaintext: ge.Bool("LOG_PAINTEXT", !required, false),
+			Level:           ge.LogLevel("LOG_LEVEL", !required, slog.LevelInfo),
+			Plaintext:       ge.Bool("LOG_PAINTEXT", !required, false),
+			RequestLevel:    ge.LogLevel("LOG_REQ_LEVEL", !required, slog.LevelDebug),
+			ReqDetailsLevel: ge.LogLevel("LOG_REQ_DETAILS_LEVEL", !required, slog.LevelDebug-1),
 		},
 		Server: &Server{
 			Addr:            ge.String("SERVER_ADDR", !required, ":8087"),

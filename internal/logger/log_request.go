@@ -6,19 +6,34 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"green-api-proxy/internal/utils"
 )
 
 const (
-	requestDetailsLogLevel = slog.LevelDebug - 1
-	sensitiveDataMask      = "*****"
+	sensitiveDataMask = "*****"
+)
+
+var (
+	requestLevel    = slog.LevelDebug
+	reqDetailsLevel = slog.LevelDebug - 1
 )
 
 type RequestDetailsOptions struct {
 	PathContainsToken bool
 }
 
+func logRequest(log *slog.Logger, tag string, origR *http.Request, took time.Duration, status int) {
+	if !slog.Default().Enabled(context.Background(), requestLevel) {
+		return
+	}
+	log.Debug(tag, "from", utils.GetClientIP(origR), "method", origR.Method, "path", origR.URL.Path,
+		"took_us", took.Microseconds(), "status", status)
+}
+
 func LogRequestDetails(log *slog.Logger, tag string, r *http.Request, opts RequestDetailsOptions) {
-	if !slog.Default().Enabled(context.Background(), requestDetailsLogLevel) {
+	if !slog.Default().Enabled(context.Background(), reqDetailsLevel) {
 		return
 	}
 
@@ -33,7 +48,7 @@ func LogRequestDetails(log *slog.Logger, tag string, r *http.Request, opts Reque
 		path = strings.ReplaceAll(path, token, sensitiveDataMask)
 	}
 
-	log.Log(context.Background(), requestDetailsLogLevel, tag,
+	log.Log(context.Background(), reqDetailsLevel, tag,
 		"method", r.Method,
 		"url", uri,
 		"path", path,

@@ -3,13 +3,12 @@ package proxy
 import (
 	"crypto/tls"
 	"fmt"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
 
 	"green-api-proxy/internal/logger"
+	"green-api-proxy/internal/utils"
 )
 
 const hideToken = true
@@ -28,25 +27,8 @@ func New(cfg *Config) (*httputil.ReverseProxy, error) {
 
 	return &httputil.ReverseProxy{
 		Director: func(r *http.Request) {
-			// Получаем IP колиента (или что сможем)
-			var clientIP string
-			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-				// Берём первый IP в цепочке (до первой запятой)
-				p := strings.IndexByte(xff, ',')
-				if p == -1 {
-					p = len(xff)
-				}
-				clientIP = strings.TrimSpace(xff[:p])
-			} else {
-				// Если пустой - используем RemoteAddr
-				clientIP = r.RemoteAddr
-				// Вырезаем только IP часть
-				if host, _, err := net.SplitHostPort(clientIP); err == nil {
-					clientIP = host
-				}
-			}
-
 			// Скрываем цепочку проксирования
+			clientIP := utils.GetClientIP(r)
 			r.Header.Set("X-Real-IP", clientIP)
 			r.Header.Set("X-Forwarded-For", clientIP)
 
